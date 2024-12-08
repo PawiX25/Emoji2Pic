@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Emoji2Pic</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+            background: #f0f0f0;
+        }
+        
+        #emojiInput {
+            font-size: 24px;
+            padding: 10px;
+            width: 300px;
+            margin: 20px;
+        }
+        
+        #result {
+            margin: 20px;
+            min-height: 300px;
+        }
+        
+        .loading {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        .examples {
+            margin: 20px 0;
+        }
+        .examples button {
+            margin: 5px;
+            padding: 8px 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: white;
+            cursor: pointer;
+        }
+        .examples button:hover {
+            background: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 Emoji to Image Generator</h1>
+    <input type="text" id="emojiInput" placeholder="Type emojis here...">
+    <button onclick="generateImage()">Generate! 🎯</button>
+    <div class="examples">
+        <p>Try these combinations:</p>
+        <button onclick="document.getElementById('emojiInput').value='🌺🦋'">🌺🦋 Flower & Butterfly</button>
+        <button onclick="document.getElementById('emojiInput').value='🌙🌌'">🌙🌌 Night Sky</button>
+        <button onclick="document.getElementById('emojiInput').value='🐱🎮'">🐱🎮 Gaming Cat</button>
+        <button onclick="document.getElementById('emojiInput').value='🌳🏰'">🌳🏰 Castle in Forest</button>
+    </div>
+    <div id="result"></div>
+
+    <script>
+        async function generateImage() {
+            const input = document.getElementById('emojiInput').value;
+            const result = document.getElementById('result');
+            
+            if (!input.match(/\p{Emoji}/u)) {
+                alert('Please enter at least one emoji! 😊');
+                return;
+            }
+
+            result.innerHTML = '<div class="loading">🎨 Generating your masterpiece...</div>';
+
+            try {
+                const response = await fetch('https://emoji2pic.api.pawix.dev/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ emojis: input })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText || `HTTP error! status: ${response.status}`);
+                }
+
+                const blob = await response.blob();
+                if (blob.size === 0) {
+                    throw new Error('Generated image is empty');
+                }
+                const imageUrl = URL.createObjectURL(blob);
+                result.innerHTML = `<img src="${imageUrl}" alt="Generated image" style="max-width: 100%;">`;
+            } catch (error) {
+                result.innerHTML = `❌ Error: ${error.message}<br><small>Please try again in a few moments.</small>`;
+                console.error('Generation error:', error);
+            }
+        }
+
+        document.getElementById('emojiInput').addEventListener('input', function(e) {
+            const nonEmoji = e.target.value.replace(/\p{Emoji}/gu, '');
+            if (nonEmoji.length > 0) {
+                e.target.value = e.target.value.replace(nonEmoji, '');
+            }
+        });
+    </script>
+</body>
+</html>
