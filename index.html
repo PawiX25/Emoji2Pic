@@ -66,9 +66,11 @@
         </div>
     </div>
     <div class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden opacity-0 transition-opacity duration-300" id="imageModal" aria-hidden="true">
-        <div class="bg-white rounded-lg overflow-hidden shadow-lg max-w-3xl w-full relative transform scale-95 opacity-0 transition-all duration-300">
-            <img id="modalImage" src="" alt="Preview" class="w-full h-auto">
-            <div class="flex justify-end p-4 space-x-2">
+        <div class="bg-white rounded-lg overflow-hidden shadow-lg max-w-3xl w-full max-h-[90vh] flex flex-col relative transform scale-95 opacity-0 transition-all duration-300">
+            <div class="flex-1 overflow-auto">
+                <img id="modalImage" src="" alt="Preview" class="w-full h-auto">
+            </div>
+            <div class="flex justify-end p-4 space-x-2 bg-white border-t">
                 <button onclick="shareImage()" class="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-400 transition duration-300">
                     📤 Share
                 </button>
