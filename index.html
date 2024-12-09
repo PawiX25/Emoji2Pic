@@ -60,6 +60,13 @@
                 aria-label="Emoji Input"
             >
             <button 
+                onclick="addRandomEmoji()" 
+                class="px-4 py-2 bg-purple-500 text-white font-semibold hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-400 transition duration-300"
+                aria-label="Add Random Emoji"
+            >
+                🎲
+            </button>
+            <button 
                 onclick="generateImage()" 
                 class="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-r-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-300 relative overflow-hidden"
                 aria-label="Generate Image"
@@ -412,6 +419,39 @@
                 document.documentElement.classList.add('dark');
             }
         }
+
+        function addRandomEmoji() {
+            const emojiRanges = {
+                emoticons: [[0x1F600, 0x1F64F]],
+                misc: [[0x1F300, 0x1F5FF]],
+                transport: [[0x1F680, 0x1F6FF]],
+                supplemental: [[0x1F900, 0x1F9FF]],
+                extended: [[0x1FA70, 0x1FAFF]],
+                dingbats: [[0x2700, 0x27BF]],
+                symbols: [[0x2600, 0x26FF]],
+                enclosed: [
+                    [0x24B6, 0x24E9],
+                    [0x1F200, 0x1F2FF]
+                ],
+                flags: [[0x1F1E6, 0x1F1FF]],
+                arrows: [[0x1F800, 0x1F8FF]]
+            };
+
+            const ranges = Object.values(emojiRanges).flat();
+            
+            const range = ranges[Math.floor(Math.random() * ranges.length)];
+            const codePoint = Math.floor(Math.random() * (range[1] - range[0] + 1)) + range[0];
+            const emoji = String.fromCodePoint(codePoint);
+            const input = document.getElementById('emojiInput');
+            
+            if (emoji.match(/\p{Emoji}/u) && 
+                !(codePoint >= 0x1F3FB && codePoint <= 0x1F3FF)) {
+                input.value += emoji;
+            } else {
+                addRandomEmoji();
+            }
+        }
+
     </script>
 </body>
 </html>
