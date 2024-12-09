@@ -88,6 +88,7 @@
     </div>
     <script>
         let currentModalImage = null;
+        let isGenerating = false;
 
         function saveToHistory(imageUrl, emojis) {
             const history = JSON.parse(localStorage.getItem('imageHistory') || '[]');
@@ -180,12 +181,23 @@
         }
 
         async function generateImage() {
+            if (isGenerating) return;
+            
             const input = document.getElementById('emojiInput').value.trim();
             const result = document.getElementById('result');
+            const generateButton = document.querySelector('button[onclick="generateImage()"]');
+            const emojiInput = document.getElementById('emojiInput');
+            
             if (!input.match(/\p{Emoji}/u)) {
                 alert('Please enter at least one emoji! 😊');
                 return;
             }
+
+            isGenerating = true;
+            generateButton.disabled = true;
+            emojiInput.disabled = true;
+            generateButton.classList.add('opacity-50', 'cursor-not-allowed');
+            
             result.innerHTML = `
                 <div class="flex flex-col items-center">
                     <div class="flex items-center space-x-2">
@@ -226,6 +238,11 @@
             } catch (error) {
                 clearInterval(timerInterval);
                 result.innerHTML = `<p class="text-red-500">❌ Error: ${error.message}</p><p class="text-gray-500 text-sm">Please try again in a few moments.</p>`;
+            } finally {
+                isGenerating = false;
+                generateButton.disabled = false;
+                emojiInput.disabled = false;
+                generateButton.classList.remove('opacity-50', 'cursor-not-allowed');
             }
         }
 
