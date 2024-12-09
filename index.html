@@ -119,9 +119,37 @@
         let currentModalImage = null;
         let isGenerating = false;
 
-        function saveToHistory(imageUrl, emojis) {
+        async function compressImage(imageUrl) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.src = imageUrl;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    const maxWidth = 800;
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    if (width > maxWidth) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    resolve(canvas.toDataURL('image/jpeg', 0.8));
+                };
+            });
+        }
+
+        async function saveToHistory(imageUrl, emojis) {
+            const compressedUrl = await compressImage(imageUrl);
             const history = JSON.parse(localStorage.getItem('imageHistory') || '[]');
-            history.unshift({ imageUrl, emojis, timestamp: Date.now() });
+            history.unshift({ imageUrl: compressedUrl, emojis, timestamp: Date.now() });
             localStorage.setItem('imageHistory', JSON.stringify(history.slice(0, 20)));
             updateHistoryGrid();
         }
@@ -131,7 +159,7 @@
             const grid = document.getElementById('historyGrid');
             grid.innerHTML = history.map(item => `
                 <div class="relative cursor-pointer group" onclick="showModal('${item.imageUrl}')">
-                    <img src="${item.imageUrl}" alt="Generated image" class="w-full h-40 object-cover rounded-md shadow-sm group-hover:opacity-75 transition-opacity duration-300">
+                    <img loading="lazy" src="${item.imageUrl}" alt="Generated image" class="w-full h-40 object-cover rounded-md shadow-sm group-hover:opacity-75 transition-opacity duration-300">
                     <div class="absolute bottom-2 left-2 bg-white dark:bg-gray-800 bg-opacity-90 px-2 py-1 rounded text-sm text-gray-800 dark:text-gray-200">
                         ${item.emojis}
                     </div>
