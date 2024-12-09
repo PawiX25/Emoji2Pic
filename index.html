@@ -69,6 +69,9 @@
         <div class="bg-white rounded-lg overflow-hidden shadow-lg max-w-3xl w-full relative transform scale-95 opacity-0 transition-all duration-300">
             <img id="modalImage" src="" alt="Preview" class="w-full h-auto">
             <div class="flex justify-end p-4 space-x-2">
+                <button onclick="shareImage()" class="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-400 transition duration-300">
+                    📤 Share
+                </button>
                 <button onclick="downloadImage()" class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 transition duration-300">
                     ⬇️ Download
                 </button>
@@ -150,6 +153,28 @@
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
+        }
+
+        async function shareImage() {
+            try {
+                const response = await fetch(currentModalImage);
+                const blob = await response.blob();
+                const file = new File([blob], 'emoji2pic.png', { type: 'image/png' });
+                
+                if (navigator.share) {
+                    try {
+                        await navigator.share({
+                            files: [file]
+                        });
+                    } catch {
+                        await copyImage();
+                    }
+                } else {
+                    await copyImage();
+                }
+            } catch (error) {
+                alert('Failed to share: ' + error);
+            }
         }
 
         async function generateImage() {
