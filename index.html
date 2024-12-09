@@ -3,176 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <title>Emoji2Pic</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            text-align: center;
-            background: #f0f0f0;
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
         }
-        
-        #emojiInput {
-            font-size: 24px;
-            padding: 10px;
-            width: 300px;
-            margin: 20px;
-        }
-        
-        #result {
-            margin: 20px;
-            min-height: 300px;
-        }
-        
         .loading {
             animation: pulse 1.5s infinite;
         }
-        
-        @keyframes pulse {
-            0% { opacity: 0.6; }
-            50% { opacity: 1; }
-            100% { opacity: 0.6; }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
-
-        .examples {
-            margin: 20px 0;
-        }
-        .examples button {
-            margin: 5px;
-            padding: 8px 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background: white;
-            cursor: pointer;
-        }
-        .examples button:hover {
-            background: #f0f0f0;
-        }
-
-        .timer {
-            font-size: 14px;
-            color: #666;
-            margin-top: 10px;
-        }
-
-        .history-section {
-            margin-top: 40px;
-            border-top: 1px solid #ccc;
-            padding-top: 20px;
-        }
-
-        .history-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .history-item {
-            position: relative;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .history-item:hover {
-            transform: scale(1.05);
-        }
-
-        .history-item img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-
-        .history-item .emoji {
-            position: absolute;
-            bottom: 5px;
-            left: 5px;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 2px 5px;
-            border-radius: 4px;
-            font-size: 12px;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-        }
-
-        .modal-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .modal img {
-            max-width: 90vw;
-            max-height: 80vh;
-        }
-
-        .modal-actions {
-            margin-top: 15px;
-        }
-
-        .modal-actions button {
-            margin: 0 5px;
-            padding: 8px 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background: white;
-            cursor: pointer;
+        .spinner {
+            animation: spin 1s linear infinite;
         }
     </style>
 </head>
-<body>
-    <h1>🎨 Emoji to Image Generator</h1>
-    <input type="text" id="emojiInput" placeholder="Type emojis here...">
-    <button onclick="generateImage()">Generate! 🎯</button>
-    <div class="examples">
-        <p>Try these combinations:</p>
-        <button onclick="document.getElementById('emojiInput').value='🌺🦋'">🌺🦋 Flower & Butterfly</button>
-        <button onclick="document.getElementById('emojiInput').value='🌙🌌'">🌙🌌 Night Sky</button>
-        <button onclick="document.getElementById('emojiInput').value='🐱🎮'">🐱🎮 Gaming Cat</button>
-        <button onclick="document.getElementById('emojiInput').value='🌳🏰'">🌳🏰 Castle in Forest</button>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-4">
+    <h1 class="text-4xl font-bold text-center text-indigo-600 mb-6">🎨 Emoji to Image Generator</h1>
+    <div class="flex flex-col items-center w-full max-w-lg">
+        <div class="flex w-full">
+            <input 
+                type="text" 
+                id="emojiInput" 
+                placeholder="Type emojis here..." 
+                class="flex-1 px-4 py-2 text-lg border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-300"
+                aria-label="Emoji Input"
+            >
+            <button 
+                onclick="generateImage()" 
+                class="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-r-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-300 relative overflow-hidden"
+                aria-label="Generate Image"
+            >
+                <span class="relative z-10">Generate! 🎯</span>
+                <span class="absolute inset-0 bg-indigo-700 opacity-0 hover:opacity-10 transition-opacity duration-300"></span>
+            </button>
+        </div>
+        <div class="w-full mt-4">
+            <p class="text-center text-gray-700 mb-2">Try these combinations:</p>
+            <div class="flex flex-wrap justify-center gap-2">
+                <button onclick="document.getElementById('emojiInput').value='🌺🦋'" class="px-3 py-1 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 transition duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    🌺🦋 Flower & Butterfly
+                </button>
+                <button onclick="document.getElementById('emojiInput').value='🌙🌌'" class="px-3 py-1 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 transition duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    🌙🌌 Night Sky
+                </button>
+                <button onclick="document.getElementById('emojiInput').value='🐱🎮'" class="px-3 py-1 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 transition duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    🐱🎮 Gaming Cat
+                </button>
+                <button onclick="document.getElementById('emojiInput').value='🌳🏰'" class="px-3 py-1 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 transition duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    🌳🏰 Castle in Forest
+                </button>
+            </div>
+        </div>
+        <div id="result" class="w-full mt-6 min-h-[300px] flex items-center justify-center bg-white rounded-md shadow-md p-4 transition-all duration-500">
+        </div>
     </div>
-    <div id="result"></div>
-
-    <div class="history-section">
-        <h2>🕒 Generated Images History</h2>
-        <div class="history-grid" id="historyGrid"></div>
+    <div class="w-full max-w-4xl mt-10">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">🕒 Generated Images History</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4" id="historyGrid">
+        </div>
     </div>
-
-    <div class="modal" id="imageModal">
-        <div class="modal-content">
-            <img id="modalImage" src="" alt="Preview">
-            <div class="modal-actions">
-                <button onclick="downloadImage()">⬇️ Download</button>
-                <button onclick="copyImage()">📋 Copy</button>
-                <button onclick="closeModal()">❌ Close</button>
+    <div class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden opacity-0 transition-opacity duration-300" id="imageModal" aria-hidden="true">
+        <div class="bg-white rounded-lg overflow-hidden shadow-lg max-w-3xl w-full relative transform scale-95 opacity-0 transition-all duration-300">
+            <img id="modalImage" src="" alt="Preview" class="w-full h-auto">
+            <div class="flex justify-end p-4 space-x-2">
+                <button onclick="downloadImage()" class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 transition duration-300">
+                    ⬇️ Download
+                </button>
+                <button onclick="copyImage()" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-300">
+                    📋 Copy
+                </button>
+                <button onclick="closeModal()" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 transition duration-300">
+                    ❌ Close
+                </button>
             </div>
         </div>
     </div>
-
     <script>
         let currentModalImage = null;
 
         function saveToHistory(imageUrl, emojis) {
             const history = JSON.parse(localStorage.getItem('imageHistory') || '[]');
             history.unshift({ imageUrl, emojis, timestamp: Date.now() });
-            localStorage.setItem('imageHistory', JSON.stringify(history.slice(0, 20))); // Keep last 20 images
+            localStorage.setItem('imageHistory', JSON.stringify(history.slice(0, 20)));
             updateHistoryGrid();
         }
 
@@ -180,9 +95,11 @@
             const history = JSON.parse(localStorage.getItem('imageHistory') || '[]');
             const grid = document.getElementById('historyGrid');
             grid.innerHTML = history.map(item => `
-                <div class="history-item" onclick="showModal('${item.imageUrl}')">
-                    <img src="${item.imageUrl}" alt="Generated image">
-                    <div class="emoji">${item.emojis}</div>
+                <div class="relative cursor-pointer group" onclick="showModal('${item.imageUrl}')">
+                    <img src="${item.imageUrl}" alt="Generated image" class="w-full h-40 object-cover rounded-md shadow-sm group-hover:opacity-75 transition-opacity duration-300">
+                    <div class="absolute bottom-2 left-2 bg-white bg-opacity-90 px-2 py-1 rounded text-sm text-gray-800">
+                        ${item.emojis}
+                    </div>
                 </div>
             `).join('');
         }
@@ -192,11 +109,25 @@
             const modal = document.getElementById('imageModal');
             const modalImg = document.getElementById('modalImage');
             modalImg.src = imageUrl;
-            modal.style.display = 'block';
+            modal.classList.remove('hidden');
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0');
+            const modalContent = modal.querySelector('div');
+            modalContent.classList.remove('scale-95', 'opacity-0');
+            modalContent.classList.add('scale-100', 'opacity-100');
+            modal.setAttribute('aria-hidden', 'false');
         }
 
         function closeModal() {
-            document.getElementById('imageModal').style.display = 'none';
+            const modal = document.getElementById('imageModal');
+            const modalContent = modal.querySelector('div');
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            modal.classList.add('opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.setAttribute('aria-hidden', 'true');
+            }, 300);
         }
 
         async function copyImage() {
@@ -222,29 +153,29 @@
         }
 
         async function generateImage() {
-            const input = document.getElementById('emojiInput').value;
+            const input = document.getElementById('emojiInput').value.trim();
             const result = document.getElementById('result');
-            
             if (!input.match(/\p{Emoji}/u)) {
                 alert('Please enter at least one emoji! 😊');
                 return;
             }
-
             result.innerHTML = `
-                <div class="loading">
-                    🎨 Generating your masterpiece...
-                    <div class="timer">Time elapsed: 0s</div>
-                </div>`;
-
+                <div class="flex flex-col items-center">
+                    <div class="flex items-center space-x-2">
+                        <svg class="w-8 h-8 text-indigo-600 spinner" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                        </svg>
+                        <p class="text-xl text-indigo-600 loading">🎨 Generating your masterpiece...</p>
+                    </div>
+                    <div class="text-gray-500 mt-2">Time elapsed: <span id="elapsedTime">0</span>s</div>
+                </div>
+            `;
             const startTime = Date.now();
-            const timer = setInterval(() => {
+            const timerInterval = setInterval(() => {
                 const elapsed = Math.floor((Date.now() - startTime) / 1000);
-                const timerElement = result.querySelector('.timer');
-                if (timerElement) {
-                    timerElement.textContent = `Time elapsed: ${elapsed}s`;
-                }
+                document.getElementById('elapsedTime').textContent = elapsed;
             }, 1000);
-
             try {
                 const response = await fetch('https://emoji2pic.api.pawix.dev/', {
                     method: 'POST',
@@ -253,24 +184,21 @@
                     },
                     body: JSON.stringify({ emojis: input })
                 });
-
                 if (!response.ok) {
                     const errorText = await response.text();
                     throw new Error(errorText || `HTTP error! status: ${response.status}`);
                 }
-
                 const blob = await response.blob();
                 if (blob.size === 0) {
                     throw new Error('Generated image is empty');
                 }
-                clearInterval(timer);
+                clearInterval(timerInterval);
                 const imageUrl = URL.createObjectURL(blob);
-                result.innerHTML = `<img src="${imageUrl}" alt="Generated image" style="max-width: 100%;">`;
+                result.innerHTML = `<img src="${imageUrl}" alt="Generated image" class="w-full h-auto rounded-md shadow-md transform transition-transform duration-500 hover:scale-105">`;
                 saveToHistory(imageUrl, input);
             } catch (error) {
-                clearInterval(timer);
-                result.innerHTML = `❌ Error: ${error.message}<br><small>Please try again in a few moments.</small>`;
-                console.error('Generation error:', error);
+                clearInterval(timerInterval);
+                result.innerHTML = `<p class="text-red-500">❌ Error: ${error.message}</p><p class="text-gray-500 text-sm">Please try again in a few moments.</p>`;
             }
         }
 
