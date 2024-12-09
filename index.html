@@ -18,6 +18,20 @@
         .spinner {
             animation: spin 1s linear infinite;
         }
+        @keyframes slideIn {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(100%); opacity: 0; }
+        }
+        .toast-enter {
+            animation: slideIn 0.3s ease-out forwards;
+        }
+        .toast-exit {
+            animation: slideOut 0.3s ease-out forwards;
+        }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col items-center p-4">
@@ -86,6 +100,7 @@
             </div>
         </div>
     </div>
+    <div id="toastContainer" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2"></div>
     <script>
         let currentModalImage = null;
         let isGenerating = false;
@@ -143,9 +158,9 @@
                 await navigator.clipboard.write([
                     new ClipboardItem({ 'image/png': blob })
                 ]);
-                alert('Image copied to clipboard!');
+                showToast('Image copied to clipboard! 📋', 'success');
             } catch (error) {
-                alert('Failed to copy image: ' + error);
+                showToast('Failed to copy image: ' + error, 'error');
             }
         }
 
@@ -169,6 +184,7 @@
                         await navigator.share({
                             files: [file]
                         });
+                        showToast('Image shared successfully! 🚀', 'success');
                     } catch {
                         await copyImage();
                     }
@@ -176,7 +192,7 @@
                     await copyImage();
                 }
             } catch (error) {
-                alert('Failed to share: ' + error);
+                showToast('Failed to share: ' + error, 'error');
             }
         }
 
@@ -189,7 +205,7 @@
             const emojiInput = document.getElementById('emojiInput');
             
             if (!input.match(/\p{Emoji}/u)) {
-                alert('Please enter at least one emoji! 😊');
+                showToast('Please enter at least one emoji! 😊', 'error');
                 return;
             }
 
@@ -238,12 +254,35 @@
             } catch (error) {
                 clearInterval(timerInterval);
                 result.innerHTML = `<p class="text-red-500">❌ Error: ${error.message}</p><p class="text-gray-500 text-sm">Please try again in a few moments.</p>`;
+                showToast('Generation failed: ' + error.message, 'error');
             } finally {
                 isGenerating = false;
                 generateButton.disabled = false;
                 emojiInput.disabled = false;
                 generateButton.classList.remove('opacity-50', 'cursor-not-allowed');
             }
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            const colors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                info: 'bg-blue-500',
+            };
+            
+            toast.className = `${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg toast-enter flex items-center gap-2`;
+            toast.innerHTML = `
+                <span class="flex-1">${message}</span>
+                <button onclick="this.parentElement.remove()" class="hover:opacity-75">✕</button>
+            `;
+            
+            document.getElementById('toastContainer').appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.replace('toast-enter', 'toast-exit');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
 
         document.getElementById('emojiInput').addEventListener('keypress', function(e) {
