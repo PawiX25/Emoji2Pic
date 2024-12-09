@@ -49,6 +49,12 @@
         .examples button:hover {
             background: #f0f0f0;
         }
+
+        .timer {
+            font-size: 14px;
+            color: #666;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -74,7 +80,20 @@
                 return;
             }
 
-            result.innerHTML = '<div class="loading">🎨 Generating your masterpiece...</div>';
+            result.innerHTML = `
+                <div class="loading">
+                    🎨 Generating your masterpiece...
+                    <div class="timer">Time elapsed: 0s</div>
+                </div>`;
+
+            const startTime = Date.now();
+            const timer = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const timerElement = result.querySelector('.timer');
+                if (timerElement) {
+                    timerElement.textContent = `Time elapsed: ${elapsed}s`;
+                }
+            }, 1000);
 
             try {
                 const response = await fetch('https://emoji2pic.api.pawix.dev/', {
@@ -94,9 +113,11 @@
                 if (blob.size === 0) {
                     throw new Error('Generated image is empty');
                 }
+                clearInterval(timer);
                 const imageUrl = URL.createObjectURL(blob);
                 result.innerHTML = `<img src="${imageUrl}" alt="Generated image" style="max-width: 100%;">`;
             } catch (error) {
+                clearInterval(timer);
                 result.innerHTML = `❌ Error: ${error.message}<br><small>Please try again in a few moments.</small>`;
                 console.error('Generation error:', error);
             }
