@@ -123,6 +123,12 @@
             }
         }
 
+        document.getElementById('emojiInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                generateImage();
+            }
+        });
+
         document.getElementById('emojiInput').addEventListener('input', function(e) {
             const nonEmoji = e.target.value.replace(/\p{Emoji}/gu, '');
             if (nonEmoji.length > 0) {
