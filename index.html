@@ -1,9 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
     <meta charset="UTF-8">
     <title>Emoji2Pic</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
     <style>
         @keyframes pulse {
             0%, 100% { opacity: 0.6; }
@@ -34,15 +39,24 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col items-center p-4">
-    <h1 class="text-4xl font-bold text-center text-indigo-600 mb-6">🎨 Emoji to Image Generator</h1>
+<body class="bg-gray-100 dark:bg-gray-900 min-h-screen flex flex-col items-center p-4">
+    <button 
+        onclick="toggleDarkMode()" 
+        class="fixed top-4 right-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200"
+        aria-label="Toggle dark mode"
+    >
+        <span class="dark:hidden">🌙</span>
+        <span class="hidden dark:inline">☀️</span>
+    </button>
+
+    <h1 class="text-4xl font-bold text-center text-indigo-600 dark:text-indigo-400 mb-6">🎨 Emoji to Image Generator</h1>
     <div class="flex flex-col items-center w-full max-w-lg">
         <div class="flex w-full">
             <input 
                 type="text" 
                 id="emojiInput" 
                 placeholder="Type emojis here..." 
-                class="flex-1 px-4 py-2 text-lg border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-300"
+                class="flex-1 px-4 py-2 text-lg border border-gray-300 dark:border-gray-600 rounded-l-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-300 bg-white dark:bg-gray-800 dark:text-white"
                 aria-label="Emoji Input"
             >
             <button 
@@ -55,36 +69,36 @@
             </button>
         </div>
         <div class="w-full mt-4">
-            <p class="text-center text-gray-700 mb-2">Try these combinations:</p>
+            <p class="text-center text-gray-700 dark:text-gray-300 mb-2">Try these combinations:</p>
             <div class="flex flex-wrap justify-center gap-2">
-                <button onclick="document.getElementById('emojiInput').value='🌺🦋'" class="px-3 py-1 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 transition duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <button onclick="document.getElementById('emojiInput').value='🌺🦋'" class="px-3 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white">
                     🌺🦋 Flower & Butterfly
                 </button>
-                <button onclick="document.getElementById('emojiInput').value='🌙🌌'" class="px-3 py-1 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 transition duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <button onclick="document.getElementById('emojiInput').value='🌙🌌'" class="px-3 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white">
                     🌙🌌 Night Sky
                 </button>
-                <button onclick="document.getElementById('emojiInput').value='🐱🎮'" class="px-3 py-1 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 transition duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <button onclick="document.getElementById('emojiInput').value='🐱🎮'" class="px-3 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white">
                     🐱🎮 Gaming Cat
                 </button>
-                <button onclick="document.getElementById('emojiInput').value='🌳🏰'" class="px-3 py-1 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 transition duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <button onclick="document.getElementById('emojiInput').value='🌳🏰'" class="px-3 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white">
                     🌳🏰 Castle in Forest
                 </button>
             </div>
         </div>
-        <div id="result" class="w-full mt-6 min-h-[300px] flex items-center justify-center bg-white rounded-md shadow-md p-4 transition-all duration-500">
+        <div id="result" class="w-full mt-6 min-h-[300px] flex items-center justify-center bg-white dark:bg-gray-800 rounded-md shadow-md p-4 transition-all duration-500">
         </div>
     </div>
     <div class="w-full max-w-4xl mt-10">
-        <h2 class="text-2xl font-semibold text-gray-800 mb-4">🕒 Generated Images History</h2>
+        <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">🕒 Generated Images History</h2>
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4" id="historyGrid">
         </div>
     </div>
     <div class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden opacity-0 transition-opacity duration-300" id="imageModal" aria-hidden="true">
-        <div class="bg-white rounded-lg overflow-hidden shadow-lg max-w-3xl w-full max-h-[90vh] flex flex-col relative transform scale-95 opacity-0 transition-all duration-300">
+        <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg max-w-3xl w-full max-h-[90vh] flex flex-col relative transform scale-95 opacity-0 transition-all duration-300">
             <div class="flex-1 overflow-auto">
                 <img id="modalImage" src="" alt="Preview" class="w-full h-auto">
             </div>
-            <div class="flex justify-end p-4 space-x-2 bg-white border-t">
+            <div class="flex justify-end p-4 space-x-2 bg-white dark:bg-gray-800 border-t dark:border-gray-700">
                 <button onclick="shareImage()" class="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-400 transition duration-300">
                     📤 Share
                 </button>
@@ -118,7 +132,7 @@
             grid.innerHTML = history.map(item => `
                 <div class="relative cursor-pointer group" onclick="showModal('${item.imageUrl}')">
                     <img src="${item.imageUrl}" alt="Generated image" class="w-full h-40 object-cover rounded-md shadow-sm group-hover:opacity-75 transition-opacity duration-300">
-                    <div class="absolute bottom-2 left-2 bg-white bg-opacity-90 px-2 py-1 rounded text-sm text-gray-800">
+                    <div class="absolute bottom-2 left-2 bg-white dark:bg-gray-800 bg-opacity-90 px-2 py-1 rounded text-sm text-gray-800 dark:text-gray-200">
                         ${item.emojis}
                     </div>
                 </div>
@@ -298,11 +312,27 @@
             }
         });
 
-        document.addEventListener('DOMContentLoaded', updateHistoryGrid);
+        document.addEventListener('DOMContentLoaded', () => {
+            initDarkMode();
+            updateHistoryGrid();
+        });
 
         document.getElementById('imageModal').addEventListener('click', function(e) {
             if (e.target === this) closeModal();
         });
+
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const isDark = html.classList.toggle('dark');
+            localStorage.setItem('darkMode', isDark ? 'dark' : 'light');
+        }
+
+        function initDarkMode() {
+            const darkMode = localStorage.getItem('darkMode');
+            if (darkMode === 'dark') {
+                document.documentElement.classList.add('dark');
+            }
+        }
     </script>
 </body>
 </html>
