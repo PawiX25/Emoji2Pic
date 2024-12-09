@@ -57,10 +57,23 @@ export default {
           return new Response('No emoji provided', { status: 400 });
         }
   
-        const response = await env.AI.run(
-          '@cf/stabilityai/stable-diffusion-xl-base-1.0',
-          { prompt: emojis }
-        );
+        const MAX_RETRIES = 3;
+        const runWithRetry = async (attempt = 0) => {
+          try {
+            return await env.AI.run(
+              '@cf/stabilityai/stable-diffusion-xl-base-1.0',
+              { prompt: emojis }
+            );
+          } catch (error) {
+            if (attempt < MAX_RETRIES) {
+              await new Promise(r => setTimeout(r, Math.pow(2, attempt) * 1000));
+              return runWithRetry(attempt + 1);
+            }
+            throw error;
+          }
+        };
+  
+        const response = await runWithRetry();
   
         return new Response(response, {
           headers: {
@@ -69,11 +82,10 @@ export default {
           },
         });
       } catch (error) {
-        return new Response(error.message, { 
+        return new Response(`Failed after retries: ${error.message}`, { 
           status: 500,
           headers: corsHeaders
         });
       }
     },
   };
-  
