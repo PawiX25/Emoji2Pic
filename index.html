@@ -89,7 +89,18 @@
         </div>
     </div>
     <div class="w-full max-w-4xl mt-10">
-        <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4">🕒 Generated Images History</h2>
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-200">🕒 Generated Images History</h2>
+            <div class="space-x-2">
+                <button onclick="exportHistory()" class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition duration-300">
+                    📤 Export
+                </button>
+                <button onclick="document.getElementById('importFile').click()" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300">
+                    📥 Import
+                </button>
+                <input type="file" id="importFile" accept=".json" class="hidden" onchange="importHistory(event)">
+            </div>
+        </div>
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4" id="historyGrid">
         </div>
     </div>
@@ -325,6 +336,46 @@
                 toast.classList.replace('toast-enter', 'toast-exit');
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
+        }
+
+        function exportHistory() {
+            const history = localStorage.getItem('imageHistory') || '[]';
+            const blob = new Blob([history], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'emoji2pic-history.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('History exported successfully! 📤', 'success');
+        }
+
+        async function importHistory(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            try {
+                const text = await file.text();
+                const importedHistory = JSON.parse(text);
+                
+                if (!Array.isArray(importedHistory)) {
+                    throw new Error('Invalid history format');
+                }
+
+                const currentHistory = JSON.parse(localStorage.getItem('imageHistory') || '[]');
+                const mergedHistory = [...importedHistory, ...currentHistory];
+                const uniqueHistory = Array.from(new Map(mergedHistory.map(item => [item.imageUrl, item])).values());
+                
+                localStorage.setItem('imageHistory', JSON.stringify(uniqueHistory.slice(0, 20)));
+                updateHistoryGrid();
+                showToast('History imported successfully! 📥', 'success');
+            } catch (error) {
+                showToast('Failed to import history: ' + error.message, 'error');
+            } finally {
+                event.target.value = '';
+            }
         }
 
         document.getElementById('emojiInput').addEventListener('keypress', function(e) {
